@@ -1,7 +1,10 @@
 package com.sky.mapper;
 
+import com.sky.annotation.AutoFill;
+import com.sky.constant.AutoFillConstant;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.enumeration.OperationType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -19,5 +22,5 @@ public interface DishFlavorMapper {
     /**
      * 新增菜品
      */
-    void insertBatch(List<DishFlavor> dishFlavorList);
+    void insertBatch(List<DishFlavor> flavors);
 }

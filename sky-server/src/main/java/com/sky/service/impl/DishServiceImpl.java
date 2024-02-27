@@ -2,12 +2,16 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
+import com.sky.mapper.SetMealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -31,10 +35,13 @@ import java.util.List;
 public class DishServiceImpl implements DishService {
 
     @Autowired
-    DishMapper dishMapper;
+    private DishMapper dishMapper;
 
     @Autowired
-    DishFlavorMapper dishFlavorMapper;
+    private DishFlavorMapper dishFlavorMapper;
+
+    @Autowired
+    private SetMealDishMapper setMealDishMapper;
 
     @Override
     @Transactional
@@ -65,5 +72,31 @@ public class DishServiceImpl implements DishService {
         Long total = page.getTotal();
         List<DishVO> records = page.getResult();
         return new PageResult(total,records);
+    }
+
+    @Override
+    @Transactional
+    public void deleteBatch(List<Long> ids) {
+        log.info("service开始菜品删除:{}", ids);
+        //判断当前菜品是否可以删除--当前菜品是否起售
+        for (Long id : ids) {
+            Dish dish = dishMapper.getById(id);
+            if(dish.getStatus() == StatusConstant.ENABLE)
+                throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+        }
+        //判断当前菜品是否可以删除--当前菜品是否在套餐里
+        List<Long> setMealIds = setMealDishMapper.getSetMealDishByIds(ids);
+        if(setMealIds.size()>0&&setMealIds!=null){
+            throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
+        }
+        //删除菜品表的数据
+        for (Long id : ids) {
+            dishMapper.deleteById(id);
+            //删除口味表的数据
+            dishFlavorMapper.deleteByDishId(id);
+        }
+
+
+
     }
 }

@@ -8,6 +8,7 @@ import com.sky.enumeration.OperationType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -33,8 +34,16 @@ public interface DishFlavorMapper {
     void deleteByDishId(Long dishId);
 
     /**
-     * 批量删除菜品
+     * 批量删除菜品口味
      * @param ids
      */
     void deleteByDishIds(List<Long> ids);
+
+    /**
+     * 根据菜品id查询口味
+     * @param dishId
+     * @return
+     */
+    @Select("select * from dish_flavor where dish_id = #{dishId}")
+    List<DishFlavor> getbyDishId(Long dishId);
 }

@@ -12,3 +12,10 @@ sky:
     access-key-secret: uN5QV3zVkzOsGaaUq5TNyDh12o3zYN
     bucket-name: sky-itcastforlzs
     endpoint: oss-cn-beijing.aliyuncs.com
+
+  redis:
+    host: localhost
+    port: 6379
+    password: "123456"
+    database: 10
+

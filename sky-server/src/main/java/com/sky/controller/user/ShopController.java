@@ -8,33 +8,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * 项目名: sky-take-out
- * 文件名: ShopController
- * 创建者: LZS
- * 创建时间:2024/3/5 18:55
- * 描述:
- **/
 @RestController("userShopController")
 @RequestMapping("/user/shop")
 @Api(tags = "店铺相关接口")
 @Slf4j
 public class ShopController {
 
+    public static final String KEY = "SHOP_STATUS";
+
     @Autowired
     private RedisTemplate redisTemplate;
-
-    public final static String KEY = "SHOP_STATUS";
 
     /**
      * 获取店铺的营业状态
      * @return
      */
-    @ApiOperation("获取店铺的营业状态")
     @GetMapping("/status")
+    @ApiOperation("获取店铺的营业状态")
     public Result<Integer> getStatus(){
         Integer status = (Integer) redisTemplate.opsForValue().get(KEY);
-        log.info("获取到店铺的营业状态为：{}",status == 1 ? "营业组" : "打烊中");
+        log.info("获取到店铺的营业状态为：{}",status == 1 ? "营业中" : "打烊中");
         return Result.success(status);
     }
 }

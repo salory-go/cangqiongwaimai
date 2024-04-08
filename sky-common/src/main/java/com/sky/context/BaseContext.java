@@ -1,8 +1,5 @@
 package com.sky.context;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class BaseContext {
 
     public static ThreadLocal<Long> threadLocal = new ThreadLocal<>();

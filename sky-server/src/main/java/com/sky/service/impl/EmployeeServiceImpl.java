@@ -50,6 +50,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         //密码比对
+        //对前端传过来的明文密码进行md5加密处理
         password = DigestUtils.md5DigestAsHex(password.getBytes());
         if (!password.equals(employee.getPassword())) {
             //密码错误
@@ -67,89 +68,96 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 新增员工
+     *
      * @param employeeDTO
      */
     public void save(EmployeeDTO employeeDTO) {
-        //创建employee对象
         Employee employee = new Employee();
 
-        //属性赋值，利用BeanUtils类
-        BeanUtils.copyProperties(employeeDTO,employee);
+        //对象属性拷贝
+        BeanUtils.copyProperties(employeeDTO, employee);
 
-        //设置密码
-        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
-
-        //设置状态
+        //设置账号的状态，默认正常状态 1表示正常 0表示锁定
         employee.setStatus(StatusConstant.ENABLE);
 
-//        //设置创建时间和更新时间
-//        employee.setCreateTime(LocalDateTime.now());
-//        employee.setUpdateTime(LocalDateTime.now());
-//
-//        //设置创建人id和修改人id
-//        //从ThreadLocal中获取更改者id
-//        Long empId = BaseContext.getCurrentId();
-//        employee.setCreateUser(empId);
-//        employee.setUpdateUser(empId);
+        //设置密码，默认密码123456
+        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
 
-        // 注入数据库
+        //设置当前记录的创建时间和修改时间
+        //employee.setCreateTime(LocalDateTime.now());
+        //employee.setUpdateTime(LocalDateTime.now());
+
+        //设置当前记录创建人id和修改人id
+        //employee.setCreateUser(BaseContext.getCurrentId());
+        //employee.setUpdateUser(BaseContext.getCurrentId());
+
         employeeMapper.insert(employee);
     }
 
     /**
      * 分页查询
+     *
      * @param employeePageQueryDTO
+     * @return
      */
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
-        //将页码和页大小存储到PageHelper里
-        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
-        //调用mapper进行查询
+        // select * from employee limit 0,10
+        //开始分页查询
+        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
+
         Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
 
-        Long totl = page.getTotal();
+        long total = page.getTotal();
         List<Employee> records = page.getResult();
-        return new PageResult(totl,records);
+
+        return new PageResult(total, records);
     }
 
     /**
      * 启用禁用员工账号
+     *
      * @param status
      * @param id
      */
     public void startOrStop(Integer status, Long id) {
-        Employee employee = new Employee();
+        // update employee set status = ? where id = ?
+
+        /*Employee employee = new Employee();
         employee.setStatus(status);
-        employee.setId(id);
+        employee.setId(id);*/
+
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id)
+                .build();
 
         employeeMapper.update(employee);
     }
 
     /**
      * 根据id查询员工
+     *
      * @param id
      * @return
      */
     public Employee getById(Long id) {
         Employee employee = employeeMapper.getById(id);
-        employee.setPassword("*******");
+        employee.setPassword("****");
         return employee;
     }
 
     /**
-     * 修改员工信息
+     * 编辑员工信息
+     *
      * @param employeeDTO
      */
     public void update(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO,employee);
-//        //设置更新时间
-//        employee.setUpdateTime(LocalDateTime.now());
-//
-//        //设置修改人id
-//        Long empId = BaseContext.getCurrentId();
-//        employee.setUpdateUser(empId);
+        BeanUtils.copyProperties(employeeDTO, employee);
+
+        //employee.setUpdateTime(LocalDateTime.now());
+        //employee.setUpdateUser(BaseContext.getCurrentId());
 
         employeeMapper.update(employee);
     }
-
 }

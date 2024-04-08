@@ -28,21 +28,21 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 捕获账号重复的异常
+     * 处理SQL异常
      * @param ex
      * @return
      */
     @ExceptionHandler
     public Result exceptionHandler(SQLIntegrityConstraintViolationException ex){
-        //Duplicate entry '1720287895' for key 'employee.idx_username'
+        //Duplicate entry 'zhangsan' for key 'employee.idx_username'
         String message = ex.getMessage();
         if(message.contains("Duplicate entry")){
             String[] split = message.split(" ");
             String username = split[2];
-            log.error(username + MessageConstant.ALREADY_EXISTS);
-            return Result.error(username + MessageConstant.ALREADY_EXISTS);
+            String msg = username + MessageConstant.ALREADY_EXISTS;
+            return Result.error(msg);
+        }else{
+            return Result.error(MessageConstant.UNKNOWN_ERROR);
         }
-        log.error(MessageConstant.UNKNOWN_ERROR);
-        return Result.error(MessageConstant.UNKNOWN_ERROR);
     }
 }

@@ -1,24 +1,25 @@
 package com.sky.mapper;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
 import com.github.pagehelper.Page;
 import com.sky.annotation.AutoFill;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-
-import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface DishMapper {
 
     /**
      * 根据分类id查询菜品数量
-     *
+     * 
      * @param categoryId
      * @return
      */
@@ -26,24 +27,24 @@ public interface DishMapper {
     Integer countByCategoryId(Long categoryId);
 
     /**
-     * 插入菜品数据
-     *
+     * 新增菜品
+     * 
      * @param dish
      */
     @AutoFill(value = OperationType.INSERT)
     void insert(Dish dish);
 
     /**
-     * 菜品分页查询
-     *
+     * 分页查询菜品
+     * 
      * @param dishPageQueryDTO
      * @return
      */
     Page<DishVO> pageQuery(DishPageQueryDTO dishPageQueryDTO);
 
     /**
-     * 根据主键查询菜品
-     *
+     * 根据id查询菜品
+     * 
      * @param id
      * @return
      */
@@ -51,31 +52,32 @@ public interface DishMapper {
     Dish getById(Long id);
 
     /**
-     * 根据主键删除菜品数据
-     *
-     * @param id
+     * 删除菜品
+     * 
+     * @param dish
      */
     @Delete("delete from dish where id = #{id}")
     void deleteById(Long id);
 
     /**
-     * 根据id动态修改菜品数据
-     *
+     * 更新菜品
+     * 
      * @param dish
      */
     @AutoFill(value = OperationType.UPDATE)
     void update(Dish dish);
 
     /**
-     * 动态条件查询菜品
-     *
-     * @param dish
+     * 根据分类id查询菜品
+     * 
+     * @param categoryId
      * @return
      */
     List<Dish> list(Dish dish);
 
     /**
      * 根据套餐id查询菜品
+     * 
      * @param setmealId
      * @return
      */
@@ -84,8 +86,10 @@ public interface DishMapper {
 
     /**
      * 根据条件统计菜品数量
+     * 
      * @param map
      * @return
      */
-    Integer countByMap(Map map);
+    Integer countByMap(Map<String, Integer> map);
+
 }
